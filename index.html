@@ -3,324 +3,908 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>犬貓腫瘤文章懶人包</title>
-    <!-- 引入 Tailwind CSS (負責排版與樣式) -->
+    <title>Action Enforcement System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Lucide Icons (負責圖示) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 增加一點粗野主義的邊框感 */
+        .strict-border { border: 2px solid #18181b; box-shadow: 4px 4px 0px #18181b; }
+        .strict-border:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #18181b; }
+        .strict-border-static { border: 2px solid #18181b; box-shadow: 4px 4px 0px #18181b; }
+    </style>
 </head>
-<body class="min-h-screen bg-stone-50 font-sans pb-20">
+<body class="bg-zinc-200 text-zinc-900 font-sans antialiased h-screen w-screen overflow-hidden flex justify-center selection:bg-black selection:text-white">
 
-    <div id="app"></div>
+    <!-- Toast Container (提醒系統) -->
+    <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-11/12 max-w-md"></div>
 
-    <script>
-        // ==========================================
-        // 🐾 資料區：未來你要新增/修改文章，直接在這裡改即可！
-        // ==========================================
-        const initialData = [
-            {
-                id: 'stage-1', title: '【發現】',
-                articles: [
-                    { id: 'a1-1', title: '當毛孩子可能面臨腫瘤，我們該怎麼做？', url: 'https://www.facebook.com/share/p/1FG49muZ6x/' },
-                    { id: 'a1-2', title: '腫瘤專科獸醫希望飼主初診前知道的五件事', url: 'https://www.threads.com/@cherryrbfdog/post/DL3xksOs3Rt?xmt=AQF0GdlEb0m2U2j581ZuPz-2kTHf9k22ax7XrvTyF6hd2w' },
-                    { id: 'a1-3', title: '獸醫師如何診斷腫瘤', url: 'https://bonheurvet.pixnet.net/blog/posts/16066175333' },
-                    { id: 'a1-4', title: '【飼主該知道的醫學名詞】腫瘤切掉就好了嗎？談「病理檢查」', url: 'https://vocus.cc/article/5f192648fd897800018a07e5' },
-                    { id: 'a1-5', title: '細針採樣', url: 'https://www.facebook.com/share/p/18ZDJfiqPw/' },
-                    { id: 'a1-6', title: '不明團塊的細針採樣', url: 'https://www.facebook.com/share/p/1aeHK6TGap/' },
-                    { id: 'a1-7', title: '細針細胞學檢查重點', url: 'https://www.facebook.com/share/p/17s8vxGUu2/' },
-                    { id: 'a1-8', title: '花了一堆錢做檢查，腫瘤也不一定能治療，有必要做這些檢查嗎？', url: 'http://www.vetcogroup.com/kids/index6.php?nowpage=1&nid=35' },
-                    { id: 'a1-9', title: '【飼主該知道的醫學名詞】為什麼要做那麼多檢查？談「鑑別診斷」', url: 'https://vocus.cc/article/5f0fa658fd897800017b8a63' },
-                    { id: 'a1-10', title: '【飼主該知道的醫學名詞】腫瘤病況多嚴重？談「癌症分期與分級」', url: 'https://vocus.cc/article/5f3910d1fd89780001d23099' }
-                ]
-            },
-            {
-                id: 'stage-2', title: '【治療決擇】',
-                articles: [
-                    { id: 'a2-1', title: '毛孩安寧緩和治療是什麼？能與積極治療並行嗎？', url: 'https://hehopets.com/archives/6500' },
-                    { id: 'a2-2', title: '治療方式的選擇 (1)', url: 'https://www.facebook.com/share/p/1HbpUcFRPr/' },
-                    { id: 'a2-3', title: '治療方式的選擇 (2)', url: 'https://www.facebook.com/share/p/1DPfLFwBz9/' },
-                    { id: 'a2-4', title: '治療方式的選擇 (3)', url: 'https://www.facebook.com/share/p/1HmBFzP62K/' },
-                    { id: 'a2-5', title: '"First, do no harm"-盡可能維持罹癌毛孩子良好生活品質前提下的癌症治療', url: 'https://www.facebook.com/share/p/175ugwMA3Y/' },
-                    { id: 'a2-6', title: 'CHOP-25、CHOP-19 どっち？', url: 'https://www.facebook.com/share/p/1DoDg8udpv/' },
-                    { id: 'a2-7', title: '惡性腫瘤的鐘擺治療', url: 'https://www.facebook.com/share/p/1GUTUAzzG7/' },
-                    { id: 'a2-8', title: '電脈衝化療簡介', url: 'https://www.facebook.com/share/p/17ocU1RGdB/' },
-                    { id: 'a2-9', title: '肢端腫瘤的替代療法--電脈衝化療', url: 'https://www.facebook.com/share/p/1GgyB5WHXB/' },
-                    { id: 'a2-10', title: '對病患最有利的治療', url: 'https://www.facebook.com/share/p/18Tme6oCTL/' },
-                    { id: 'a2-11', title: '那美好的仗，我已經打過了；該跑的路程，我已經跑盡了', url: 'https://www.facebook.com/share/p/172E8RVnei/' }
-                ]
-            },
-            {
-                id: 'stage-3', title: '【治療中】',
-                articles: [
-                    { id: 'a3-1', title: '各種飼主餵藥的技巧(重點：快、狠、準)', url: 'https://www.threads.com/@libruce168/post/DUAvXiDklg4?xmt=AQF0ovj9FvDn2zhmbDLPjj5eKDIeLm9CMoYnZgDHiIlJhg' },
-                    { id: 'a3-2', title: '狗貓不吃飯該怎麼辦？觀察動物食慾的小技巧', url: 'https://vocus.cc/article/5fc33d2dfd897800017605f0' },
-                    { id: 'a3-3', title: '癌症動物的營養需求', url: 'https://www.facebook.com/share/p/1As2Pdr58q/' },
-                    { id: 'a3-4', title: '腫瘤的保養品', url: 'https://www.facebook.com/share/p/1DgjZnhxXJ/' },
-                    { id: 'a3-5', title: '癌症的疼痛管理', url: 'https://www.facebook.com/share/p/1baWh1AQvz/' },
-                    { id: 'a3-6', title: '學習性食物嫌惡', url: 'https://www.facebook.com/share/p/1B1mdW3cse/' },
-                    { id: 'a3-7', title: '動物罹患腫瘤接受藥物治療，要怎麼知道到底有沒有效？', url: 'https://vocus.cc/article/5ffdd333fd89780001d6a483' },
-                    { id: 'a3-8', title: '【飼主該知道的醫學名詞】我的毛孩還能活多久？談「預後」', url: 'https://vocus.cc/article/5ef05974fd897800019b0e65' },
-                    { id: 'a3-9', title: '關於安寧舒緩治療', url: 'https://www.facebook.com/share/p/1FJravvNSK/' }
-                ]
-            },
-            {
-                id: 'stage-4', title: '【臨終】',
-                articles: [
-                    { id: 'a4-1', title: '癌症病患臨終前可能的症狀', url: 'https://www.facebook.com/share/p/1an2tLnhWh/' },
-                    { id: 'a4-2', title: '該送他離開嗎?重病動物的安寧照護與生活品質評估', url: 'https://vocus.cc/article/61c039fffd89780001cb0279' },
-                    { id: 'a4-3', title: '生活質量評估表', url: 'https://www.homewardpet.com.tw/quality' },
-                    { id: 'a4-4', title: '生活品質評估 - 如何評估疼痛？', url: 'https://www.homewardpet.com.tw/news/31' },
-                    { id: 'a4-5', title: '生活品質評估 - 如何評估食慾？', url: 'https://www.homewardpet.com.tw/news/47' },
-                    { id: 'a4-6', title: '生活品質評估 - 寵物的幸福感／快樂感', url: 'https://www.homewardpet.com.tw/news/38' },
-                    { id: 'a4-7', title: '生活品質評估 - 好日子與壞日子 - 主人的身心壓力', url: 'https://www.homewardpet.com.tw/news/28' },
-                    { id: 'a4-8', title: '當毛孩子邁入生命的最後階段', url: 'https://www.facebook.com/share/p/1Ciuo87o5K/' }
-                ]
-            },
-            {
-                id: 'stage-5', title: '【其它參考資訊】',
-                articles: [
-                    { id: 'a5-1', title: '貓咪常見腫瘤', url: 'https://www.facebook.com/share/p/1MJqRR32WW/' },
-                    { id: 'a5-2', title: '貓淋巴瘤風險因子', url: 'https://www.facebook.com/share/p/1BHxZ46QhV/' },
-                    { id: 'a5-3', title: '貓咪注射部位肉瘤（疫苗相關性肉瘤）', url: 'https://www.facebook.com/share/p/1AgmnxVU9m/' },
-                    { id: 'a5-4', title: '犬乳腺腫瘤的手術範圍', url: 'https://www.facebook.com/share/p/1Dv4kH48kC/' },
-                    { id: 'a5-5', title: '乳腺腫瘤治療上的幾個重點', url: 'https://www.facebook.com/share/p/18bT6tJjTN/' }
-                ]
-            }
+    <!-- App Container -->
+    <div class="w-full max-w-md bg-white h-full relative flex flex-col border-x-2 border-zinc-800">
+        
+        <!-- Header -->
+        <header class="bg-zinc-900 text-zinc-50 p-4 flex justify-between items-center z-10 border-b-2 border-zinc-900">
+            <h1 class="font-black text-xl tracking-widest">ENFORCE<span class="text-red-500">.</span></h1>
+            <div class="flex items-center gap-3">
+                <button id="btn-enable-notify" onclick="enableAndTestNotification()" class="text-xs font-bold text-yellow-500 hover:text-yellow-300 transition hidden border border-yellow-500 px-2 py-1 rounded">🔔 啟用通知</button>
+                <button onclick="switchView('view-analytics')" class="text-xs font-bold text-zinc-400 hover:text-white transition">分析報告</button>
+                <div id="connection-status" class="w-3 h-3 rounded-full bg-yellow-500 animate-pulse" title="Connecting..."></div>
+                <div class="text-xs font-bold bg-zinc-800 px-3 py-1 text-zinc-300 border border-zinc-600 hidden sm:block">PENALTY: OFF</div>
+            </div>
+        </header>
+
+        <!-- View 1: Dashboard (Task List) -->
+        <main id="view-dashboard" class="flex-1 flex flex-col overflow-y-auto p-5 no-scrollbar bg-zinc-50">
+            <div class="flex justify-between items-end mb-8 border-b-2 border-zinc-200 pb-4">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tight text-zinc-900">任務清單</h2>
+                    <p id="dashboard-quote" class="text-sm text-zinc-500 mt-1 font-medium tracking-wide">系統連線中，請稍候...</p>
+                </div>
+                <button id="btn-create-task" onclick="checkAndOpenCreate()" class="bg-zinc-900 text-white w-12 h-12 flex items-center justify-center hover:bg-zinc-800 transition text-3xl pb-1 strict-border rounded-none opacity-50 cursor-not-allowed" disabled>
+                    +
+                </button>
+            </div>
+
+            <!-- Task List Container -->
+            <div id="task-list" class="space-y-5">
+                <div class="text-center py-10 text-zinc-400 font-bold border-2 border-dashed border-zinc-300">
+                    載入雲端資料中...
+                </div>
+            </div>
+        </main>
+
+        <!-- View 2: Create Task -->
+        <main id="view-create" class="flex-1 overflow-y-auto p-6 hidden flex-col bg-zinc-50">
+            <button onclick="switchView('view-dashboard')" class="text-zinc-500 mb-8 text-left flex items-center gap-2 hover:text-zinc-900 font-bold transition">
+                ← 返回前線
+            </button>
+            <h2 id="create-view-title" class="text-3xl font-black mb-8">宣告新任務</h2>
+            
+            <form id="create-task-form" class="space-y-8 flex-1" onsubmit="handleCreateTask(event)">
+                <div>
+                    <label class="block text-sm font-black mb-2 tracking-wide">任務名稱 (必定要完成的事)</label>
+                    <input type="text" id="task-title" required placeholder="例如：寫完首頁程式碼" class="w-full bg-transparent border-b-2 border-zinc-300 py-3 focus:outline-none focus:border-zinc-900 transition text-lg font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-black mb-2 tracking-wide">截止時間 (Deadline)</label>
+                    <input type="datetime-local" id="task-deadline" required class="w-full bg-transparent border-b-2 border-zinc-300 py-3 focus:outline-none focus:border-zinc-900 transition text-lg font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-black mb-2 tracking-wide">任務說明 (選填)</label>
+                    <textarea id="task-desc" class="w-full border-2 border-zinc-300 p-3 focus:outline-none focus:border-zinc-900 transition text-sm font-medium bg-transparent" rows="2" placeholder="寫下具體要完成的細節..."></textarea>
+                </div>
+                <div class="bg-zinc-200 p-4 border-l-4 border-zinc-500 text-sm text-zinc-700 font-medium">
+                    💡 提醒：立下誓言後請全力以赴。若錯過截止時間，系統會強制要求你記錄卡關原因。請確保目標合理。
+                </div>
+                
+                <button id="create-submit-btn" type="submit" class="w-full bg-zinc-900 text-white py-4 font-black text-lg transition mt-8 strict-border rounded-none">
+                    立下誓言 (SAVE)
+                </button>
+            </form>
+        </main>
+
+        <!-- View 3: Focus Mode -->
+        <main id="view-focus" class="absolute inset-0 bg-zinc-900 text-zinc-50 z-20 hidden flex-col overflow-y-auto no-scrollbar">
+            <div class="flex-1 flex flex-col items-center justify-center p-6 text-center w-full min-h-max py-16">
+                <button onclick="switchView('view-dashboard')" class="absolute top-6 left-6 text-zinc-400 hover:text-white font-bold tracking-wide">
+                    ← 縮小視窗
+                </button>
+                
+                <p class="text-red-500 font-black mb-4 tracking-widest uppercase text-sm border border-red-500 px-3 py-1 mt-8">Focus Mode</p>
+                <h2 id="focus-title" class="text-3xl font-black mb-4 px-4 leading-tight">任務名稱</h2>
+                <p id="focus-desc" class="text-zinc-400 mb-8 max-w-sm mx-auto text-sm"></p>
+                
+                <!-- Giant Timer (縮小為 text-5xl 以適應長文字，確保不擠壓按鈕) -->
+                <div id="focus-timer" class="font-mono text-5xl md:text-6xl font-light tracking-tighter mb-4 text-white w-full px-2">
+                    00:00:00
+                </div>
+                <p class="text-zinc-400 mb-10 font-medium tracking-wide">距離截止時間剩餘時間</p>
+
+                <div class="w-full max-w-xs space-y-4">
+                    <!-- 完成按鈕永遠顯示 -->
+                    <button id="focus-btn-complete" onclick="completeFocusTask()" class="w-full bg-zinc-50 text-zinc-900 py-4 font-black text-xl hover:bg-zinc-200 transition">
+                        任務完成 (COMPLETE)
+                    </button>
+                    <button onclick="abandonFocusTask()" class="w-full bg-transparent border-2 border-red-900 text-red-500 py-4 font-black hover:bg-red-950 transition">
+                        我放棄了 (GIVE UP)
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- View 4: Failure Input -->
+        <main id="view-failure" class="absolute inset-0 bg-zinc-50 z-30 hidden flex-col p-6 overflow-y-auto no-scrollbar">
+            <h2 class="text-4xl font-black mt-8 mb-2 text-zinc-800 tracking-tight">任務覆盤</h2>
+            <p class="text-zinc-500 mb-8 font-medium">找出卡關的原因，我們下次做得更好。這會成為你的成長數據。</p>
+
+            <form id="failure-form" onsubmit="submitFailure(event)">
+                <div class="space-y-3 mb-8">
+                    <label class="flex items-center p-4 border-2 border-zinc-200 cursor-pointer hover:border-zinc-900 transition bg-white">
+                        <input type="radio" name="reason" value="太累了 (Too tired)" required class="w-5 h-5 text-zinc-900 focus:ring-zinc-900">
+                        <span class="ml-3 font-bold text-zinc-800">太累了 (Too tired)</span>
+                    </label>
+                    <label class="flex items-center p-4 border-2 border-zinc-200 cursor-pointer hover:border-zinc-900 transition bg-white">
+                        <input type="radio" name="reason" value="壓力太大 (Too stressed)" class="w-5 h-5 text-zinc-900 focus:ring-zinc-900">
+                        <span class="ml-3 font-bold text-zinc-800">壓力太大 (Too stressed)</span>
+                    </label>
+                    <label class="flex items-center p-4 border-2 border-zinc-200 cursor-pointer hover:border-zinc-900 transition bg-white">
+                        <input type="radio" name="reason" value="滑手機/被分心 (Distracted)" class="w-5 h-5 text-zinc-900 focus:ring-zinc-900">
+                        <span class="ml-3 font-bold text-zinc-800">滑手機/被分心 (Distracted)</span>
+                    </label>
+                    <label class="flex items-center p-4 border-2 border-zinc-200 cursor-pointer hover:border-zinc-900 transition bg-white">
+                        <input type="radio" name="reason" value="不知道從何開始 (Didn't know how)" class="w-5 h-5 text-zinc-900 focus:ring-zinc-900">
+                        <span class="ml-3 font-bold text-zinc-800">不知道從何開始 (Didn't know how)</span>
+                    </label>
+                    <label class="flex items-center p-4 border-2 border-zinc-200 cursor-pointer hover:border-zinc-900 transition bg-white">
+                        <input type="radio" name="reason" value="時間不夠/突發狀況 (Unexpected)" class="w-5 h-5 text-zinc-900 focus:ring-zinc-900">
+                        <span class="ml-3 font-bold text-zinc-800">時間不夠/突發狀況 (Unexpected)</span>
+                    </label>
+                </div>
+
+                <div class="mb-12">
+                    <label class="block text-sm font-black mb-2 text-zinc-900 tracking-wide">其他藉口 (選填)</label>
+                    <textarea id="failure-notes" class="w-full border-2 border-zinc-300 p-4 focus:outline-none focus:border-zinc-900 transition font-medium bg-white" rows="3" placeholder="寫下你的藉口..."></textarea>
+                </div>
+
+                <div class="mt-auto pb-6">
+                    <button type="submit" class="w-full bg-zinc-900 text-white py-4 font-black text-lg hover:bg-zinc-800 transition strict-border rounded-none">
+                        記錄原因，重新出發 (SAVE & RESTART)
+                    </button>
+                    <button type="button" onclick="switchView('view-dashboard')" class="w-full text-center text-zinc-500 py-4 mt-2 hover:text-zinc-900 font-bold transition">
+                        返回清單
+                    </button>
+                </div>
+            </form>
+        </main>
+
+        <!-- View 5: Analytics -->
+        <main id="view-analytics" class="flex-1 overflow-y-auto p-6 hidden flex-col bg-zinc-50">
+            <button onclick="switchView('view-dashboard')" class="text-zinc-500 mb-8 text-left flex items-center gap-2 hover:text-zinc-900 font-bold transition">
+                ← 返回前線
+            </button>
+            <h2 class="text-3xl font-black mb-8">分析報告</h2>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-6 strict-border-static">
+                    <h3 class="text-sm font-bold text-zinc-500 mb-2">準時完成率</h3>
+                    <div id="analytics-rate-ontime" class="text-4xl font-black text-green-600">0%</div>
+                </div>
+                <div class="bg-white p-6 strict-border-static">
+                    <h3 class="text-sm font-bold text-zinc-500 mb-2">壓線/逾期完成</h3>
+                    <div id="analytics-rate-late" class="text-4xl font-black text-yellow-600">0%</div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 strict-border-static">
+                <h3 class="text-sm font-bold text-zinc-500 mb-4">卡關瓶頸分析</h3>
+                <div id="analytics-reasons" class="space-y-2">
+                    <!-- Reasons injected here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- View 6: Check-in Modal (專注點名系統) -->
+        <main id="view-checkin" class="absolute inset-0 bg-zinc-900/95 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-6 no-scrollbar">
+            <div class="bg-white p-8 strict-border-static w-full max-w-sm text-center">
+                <div class="text-6xl mb-4 animate-bounce">🚨</div>
+                <h2 class="text-3xl font-black mb-2 text-zinc-900 tracking-tight">專注點名</h2>
+                <p class="text-zinc-600 font-bold mb-8 text-sm">任務已執行超過 30 分鐘。<br>你還在專注處理「<span id="checkin-task-title" class="text-red-600 font-black"></span>」嗎？</p>
+                
+                <div class="space-y-3">
+                    <button id="btn-confirm-checkin" class="w-full bg-zinc-900 text-white py-4 font-black text-lg hover:bg-zinc-800 transition strict-border rounded-none">
+                        我還在奮戰 (KEEP GOING)
+                    </button>
+                    <button id="btn-fail-checkin" class="w-full bg-red-50 text-red-700 py-4 font-black hover:bg-red-100 transition border-2 border-red-300">
+                        我分心了 (DISTRACTED)
+                    </button>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- 導入 Firebase 模組 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 名言庫
+        const quotes = [
+            "種一棵樹最好的時間是十年前，其次是現在。",
+            "拖延是一場對自己的信用破產。",
+            "行動是治癒恐懼的良藥，猶豫拖延將不斷滋養恐懼。",
+            "完美主義是拖延症最華麗的藉口。",
+            "你不需要很厲害才能開始，但你需要開始才會很厲害。",
+            "明天的你，不會比今天的你更想做這件事。",
+            "把任務切小，小到你不好意思拖延。",
+            "時間不會等你，它只會無情地流逝。",
+            "最困難的總是第一步，踏出去就解決了一半。",
+            "不要等靈感，靈感是留給正在行動的人。"
         ];
 
-        // 免責聲明文字
-        const disclaimerText = `1. 本網頁蒐集資訊僅供參考，蒐集這些資訊，只是希望飼主們碰到毛孩確診腫瘤後，可以更快的對腫瘤有初步的認識。
-2. 本網頁蒐集的資訊皆無跟任何動物醫院、醫師配合，純粹是板主站在覺得文章簡單、易懂的角度，還有前輩們經驗分享的資訊來蒐集文章。
-3. 關於毛孩的病況、檢查、治療方式…等等，依照個體的狀況及條件不同，請務必與您毛孩的腫瘤科醫師討論！`;
+        // 狀態管理 
+        let tasks = [];
+        let currentFocusTaskId = null;
+        let failingTaskId = null;
+        let timerInterval = null;
+        let editingTaskId = null;
+        let hasRequestedNotification = false; 
+        let isCheckInModalOpen = false; // 控制查勤視窗的開關
 
-        // 網站建置說明文字
-        const aboutText = `因板主自家貓咪於2026/3/4因淋巴瘤前往喵星，回想照顧貓咪的這段時間，除了這是我的第一隻貓外，也是我第一次碰到這種病，整個過程感到非常慌張，且沒有方向，即便上網蒐集資訊，也感到資訊散落各地，沒有系統化的網站指引飼主該怎麼來對這個病有個初步的了解，故架了這個網站，希望正走在這條路的飼主們能夠藉由這個網站快速了解腫瘤，並能較清楚的知道下一步要與腫瘤醫師討論什麼。`;
+        // Firebase 基礎設施
+        let db, auth, userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'enforce-app';
+        let isDataLoaded = false;
 
-        let state = {
-            categories: initialData,
-            expandedCats: ['stage-1']
+        // --- 桌面通知管理模組 ---
+        window.checkNotificationStatus = () => {
+            const btn = document.getElementById('btn-enable-notify');
+            if (!btn) return;
+            
+            if ("Notification" in window && Notification.permission !== "granted") {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
         };
 
-        // ==========================================
-        // ⚙️ 系統邏輯區：控制展開/收合
-        // ==========================================
-        function toggleCategory(id) {
-            if (state.expandedCats.includes(id)) {
-                state.expandedCats = state.expandedCats.filter(catId => catId !== id);
-            } else {
-                state.expandedCats.push(id);
+        window.enableAndTestNotification = () => {
+            if (!("Notification" in window)) {
+                showToast("⚠️ 你的瀏覽器不支援桌面通知", "danger");
+                return;
             }
-            render();
-        }
-
-        function expandAll() {
-            state.expandedCats = state.categories.map(cat => cat.id);
-            render();
-        }
-
-        function collapseAll() {
-            state.expandedCats = [];
-            render();
-        }
-
-        // ==========================================
-        // 🎨 畫面渲染區
-        // ==========================================
-        function render() {
-            const app = document.getElementById('app');
             
-            let html = `
-                <!-- 頭部導覽列 -->
-                <header class="bg-white shadow-sm sticky top-0 z-10">
-                    <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
-                        <div class="flex items-center space-x-2">
-                            <div class="bg-amber-500 p-2 rounded-lg text-white">
-                                <i data-lucide="link" class="w-6 h-6"></i>
-                            </div>
-                            <h1 class="text-xl font-bold text-stone-800">犬貓腫瘤文章懶人包</h1>
-                        </div>
-                    </div>
-                </header>
+            if (Notification.permission === "default" || Notification.permission === "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        document.getElementById('btn-enable-notify').classList.add('hidden');
+                        new Notification("ENFORCE. 武裝完畢", {
+                            body: "✅ 桌面通知已成功啟用！當任務快逾期時你會收到這樣的警告。",
+                            icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png"
+                        });
+                        showToast("✅ 桌面通知已成功啟用！", "warning");
+                    } else {
+                        showToast("⚠️ 權限被拒絕。請點擊網址列左側的鎖頭 🔒 圖示允許通知。", "danger");
+                    }
+                }).catch(e => console.warn("通知權限請求失敗:", e));
+            } else if (Notification.permission === "granted") {
+                document.getElementById('btn-enable-notify').classList.add('hidden');
+                new Notification("ENFORCE. 測試", {
+                    body: "桌面通知已經是啟用狀態囉！",
+                    icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png"
+                });
+            }
+        };
 
-                <main class="max-w-3xl mx-auto px-4 mt-8 pb-12">
-                    <!-- 免責聲明 -->
-                    <div class="mb-6 p-4 sm:p-5 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg flex flex-col sm:flex-row items-start text-amber-900 shadow-sm transition-all">
-                        <div class="flex items-start flex-1 w-full">
-                            <i data-lucide="info" class="flex-shrink-0 mr-3 mt-0.5 text-amber-600 w-5 h-5 hidden sm:block"></i>
-                            <div class="text-sm leading-relaxed font-medium space-y-1.5 w-full">
-                                <div class="flex items-center mb-1">
-                                    <i data-lucide="info" class="flex-shrink-0 mr-2 text-amber-600 w-5 h-5 sm:hidden"></i>
-                                    <p class="font-bold text-base">免責聲明：</p>
-                                </div>
-                                ${disclaimerText.split('\n').map(line => {
-                                    // 自動偵測第3點並加上 正紅字 + 粗體 + 底線
-                                    if (line.trim().startsWith('3.')) {
-                                        return `<p class="text-red-600 font-bold underline decoration-2 underline-offset-4">${line}</p>`;
-                                    }
-                                    return `<p>${line}</p>`;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
+        // --- 警報音效模組 (Audio Fallback) ---
+        window.playAlertSound = () => {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'square'; // 尖銳的電子音
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15); // 短促的嗶聲
+            } catch(e) {
+                console.log("Audio play failed", e);
+            }
+        };
 
-                    <!-- 展開/折疊控制列 -->
-                    <div class="flex justify-end space-x-4 mb-4">
-                        <button onclick="expandAll()" class="text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors">
-                            全部展開
-                        </button>
-                        <button onclick="collapseAll()" class="text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors">
-                            全部折疊
-                        </button>
-                    </div>
+        // --- Firebase 初始化流程 ---
+        const initFirebase = async () => {
+            try {
+                const myFirebaseConfig = {
+                    apiKey: "AIzaSyCrWudNpU98NiynYRdT4O52wJEpjr7EK_Q",
+                    authDomain: "enforce-app-ffeec.firebaseapp.com",
+                    projectId: "enforce-app-ffeec",
+                    storageBucket: "enforce-app-ffeec.firebasestorage.app",
+                    messagingSenderId: "1095776342937",
+                    appId: "1:1095776342937:web:85c1673225acfaa91e3908"
+                };
 
-                    <!-- 文章分類列表 -->
-                    <div class="space-y-5">
-                        ${state.categories.map(cat => {
-                            const isExpanded = state.expandedCats.includes(cat.id);
-                            
-                            let catHtml = `
-                            <div class="bg-white rounded-2xl transition-all duration-300 border ${isExpanded ? 'border-amber-200 shadow-md ring-2 ring-amber-50' : 'border-stone-200 shadow-sm hover:border-amber-200'} overflow-hidden">
-                                <button onclick="toggleCategory('${cat.id}')" title="點擊展開/折疊此階段" class="w-full px-5 py-4 flex items-center justify-between transition-colors ${isExpanded ? 'bg-amber-50/50' : 'bg-white hover:bg-stone-50'}">
-                                    <div class="flex items-center text-lg font-semibold text-stone-800">
-                                        <span class="mr-3 transition-transform duration-300 ${isExpanded ? 'text-amber-600' : 'text-amber-500'}">
-                                            <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-6 h-6"></i>
-                                        </span>
-                                        ${cat.title}
-                                        <span class="ml-3 text-xs font-normal transition-colors duration-300 ${isExpanded ? 'text-amber-700 bg-amber-100/80' : 'text-stone-500 bg-stone-100'} px-2.5 py-1 rounded-full">
-                                            ${cat.articles.length} 篇
-                                        </span>
-                                    </div>
-                                </button>
-                            `;
+                let configToUse = myFirebaseConfig;
+                if (myFirebaseConfig.apiKey === "YOUR_API_KEY" && typeof __firebase_config !== 'undefined') {
+                    configToUse = JSON.parse(__firebase_config);
+                }
 
-                            if (isExpanded) {
-                                catHtml += `<div class="border-t border-amber-100/50 bg-stone-50/80 p-4 sm:pl-12 space-y-3 shadow-inner">`;
-                                
-                                cat.articles.forEach(art => {
-                                    catHtml += `
-                                    <div class="group flex items-center justify-between p-3.5 rounded-xl border transition-all duration-300 bg-white border-stone-200 shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5">
-                                        <a href="${art.url}" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="flex-1 flex items-start text-stone-700 hover:text-amber-700 mr-4">
-                                            <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                            <span class="font-medium leading-relaxed">${art.title}</span>
-                                        </a>
-                                    </div>`;
-                                });
+                const app = initializeApp(configToUse);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-                                catHtml += `</div>`;
-                            }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (tokenError) {
+                        console.warn("Token mismatch (using custom Firebase project). Falling back to anonymous sign-in.", tokenError);
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
 
-                            catHtml += `</div>`;
-                            return catHtml;
-                        }).join('')}
-                    </div>
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        setupRealtimeSync();
+                        document.getElementById('connection-status').classList.replace('bg-yellow-500', 'bg-green-500');
+                        document.getElementById('connection-status').classList.remove('animate-pulse');
+                        document.getElementById('connection-status').title = "Connected";
+                        document.getElementById('btn-create-task').classList.remove('opacity-50', 'cursor-not-allowed');
+                        document.getElementById('btn-create-task').removeAttribute('disabled');
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase init fail:", error);
+                showToast("連線異常，請檢查你的 Firebase Config 是否填寫正確", "danger");
+                document.getElementById('connection-status').classList.replace('bg-yellow-500', 'bg-red-500');
+            }
+        };
 
-                    <!-- 網站建置說明區塊 -->
-                    <div class="mt-10 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
-                            <div class="bg-red-50 p-1.5 rounded-lg mr-3 shadow-sm border border-red-100">
-                                <i data-lucide="heart" class="w-5 h-5 text-red-500"></i>
-                            </div>
-                            <h2 class="text-lg font-bold text-stone-800">網站建置說明</h2>
-                        </div>
-                        <div class="p-5 sm:p-6 bg-white text-stone-700 leading-relaxed space-y-3">
-                            ${aboutText.split('\n').map(line => `<p>${line}</p>`).join('')}
-                        </div>
-                    </div>
+        // --- 建立即時同步監聽 ---
+        const setupRealtimeSync = () => {
+            if (!userId) return;
+            const tasksRef = collection(db, 'artifacts', appId, 'users', userId, 'tasks');
+            
+            onSnapshot(tasksRef, (snapshot) => {
+                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                isDataLoaded = true;
+                
+                renderTasks();
+                if (!document.getElementById('view-analytics').classList.contains('hidden')) {
+                    renderAnalytics();
+                }
+            }, (error) => {
+                console.error("Firestore sync error:", error);
+                showToast("資料同步失敗，請檢查網路連線或資料庫權限設定", "danger");
+            });
+        };
 
-                    <!-- 板主個人經驗分享區塊 -->
-                    <div class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
-                            <div class="bg-amber-100 p-1.5 rounded-lg mr-3 shadow-sm">
-                                <i data-lucide="book-open" class="w-5 h-5 text-amber-600"></i>
-                            </div>
-                            <h2 class="text-lg font-bold text-stone-800">板主個人經驗分享</h2>
-                        </div>
-                        <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner">
-                            <a href="https://www.threads.com/@lostforeverkim/post/DWMI1GaklBJ?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第一篇：從腫瘤確診到離世</span>
-                            </a>
-                            <a href="https://www.threads.com/@lostforeverkim/post/DWVTvjfEmPm?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第二篇：選擇治療的動物醫院</span>
-                            </a>
-                            <a href="https://www.threads.com/@lostforeverkim/post/DW4EkEAkm3d?xmt=AQF04QZI03GD5iV02B5XyYf_p7UFjsiuWMEIoL9yiq3spA" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第三篇：決定安寧的時機點</span>
-                            </a>
-                            
-                            <div class="mt-5 p-4 bg-amber-50 rounded-xl text-sm text-amber-900 border border-amber-200 shadow-sm flex items-start">
-                                <i data-lucide="message-square-heart" class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 text-amber-500"></i>
-                                <p class="leading-relaxed">文章同步刊登在FB【腫瘤貓~ 照護醫療社團】，社團需經審核才能加入，所以無法直接提供連結，建議加入社團，文章下有更多有經驗的前輩的分享留言。</p>
-                            </div>
-                        </div>
-                    </div>
+        // --- 視圖切換 ---
+        window.switchView = (viewId) => {
+            // 切換視圖時不應隱藏 z-50 的強制彈窗，除非是程式主動關閉
+            const views = ['view-dashboard', 'view-create', 'view-focus', 'view-failure', 'view-analytics'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+            const targetView = document.getElementById(viewId);
+            if(targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('flex');
+            }
+            
+            if (viewId === 'view-dashboard' && isDataLoaded) renderTasks();
+            if (viewId === 'view-analytics' && isDataLoaded) renderAnalytics();
+        };
 
-                    <!-- 社群連結區塊 (Instagram & Threads) -->
-                    <div class="mt-6 flex justify-center space-x-4">
-                        <a href="https://www.instagram.com/lostforeverkim/" target="_blank" rel="noopener noreferrer" title="追蹤我的 Instagram" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-sm border border-stone-200 text-stone-400 hover:text-pink-600 hover:border-pink-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                             <!-- 內建 Instagram SVG 圖示 -->
-                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.threads.com/@lostforeverkim" target="_blank" rel="noopener noreferrer" title="追蹤我的 Threads" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-sm border border-stone-200 text-stone-400 hover:text-black hover:border-stone-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                            <!-- 內建 Threads SVG 圖示 -->
-                            <svg class="w-5 h-5 fill-current" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.881 72.2328C81.6116 63.5383 90.6052 61.6848 97.2286 61.6848C97.3051 61.6848 97.3819 61.6848 97.4576 61.6855C105.707 61.7381 111.932 64.1366 115.961 68.814C118.893 72.2193 120.854 76.925 121.825 82.8638C114.511 81.6207 106.601 81.2385 98.145 81.7233C74.3247 83.0954 59.0111 96.9879 60.0396 116.292C60.5615 126.084 65.4397 134.508 73.775 140.011C80.8224 144.663 89.899 146.938 99.3323 146.423C111.79 145.74 121.563 140.987 128.381 132.296C133.559 125.696 136.834 117.143 138.28 106.366C144.217 109.949 148.617 114.664 151.047 120.332C155.179 129.967 155.42 145.8 142.501 158.708C131.182 170.016 117.576 174.908 97.0135 175.059C74.2042 174.89 56.9538 167.575 45.7381 153.317C35.2355 139.966 29.8077 120.682 29.6052 96C29.8077 71.3178 35.2355 52.0336 45.7381 38.6827C56.9538 24.4249 74.2039 17.11 97.0132 16.9405C119.988 17.1113 137.539 24.4614 149.184 38.788C154.894 45.8136 159.199 54.6488 162.037 64.9503L178.184 60.6422C174.744 47.9622 169.331 37.0357 161.965 27.974C147.036 9.60668 125.202 0.195148 97.0695 0H96.9569C68.8816 0.194473 47.2921 9.6418 32.7883 28.0793C19.8819 44.4864 13.2244 67.3157 13.0007 95.9325L13 96L13.0007 96.0675C13.2244 124.684 19.8819 147.514 32.7883 163.921C47.2921 182.358 68.8816 191.806 96.9569 192H97.0695C122.03 191.827 139.624 185.292 154.118 170.811C173.081 151.866 172.51 128.119 166.26 113.541C161.776 103.087 153.227 94.5962 141.537 88.9883ZM98.4405 129.507C88.0005 130.095 77.1544 125.409 76.6196 115.372C76.2232 107.93 81.9158 99.626 99.0812 98.6368C101.047 98.5234 102.976 98.468 104.871 98.468C111.106 98.468 116.939 99.0737 122.242 100.233C120.264 124.935 108.662 128.946 98.4405 129.507Z"></path>
-                            </svg>
-                        </a>
-                    </div>
+        // --- UI 操作邏輯 ---
+        window.checkAndOpenCreate = () => {
+            window.requestNotificationPermission(); 
+            
+            const activeTasks = tasks.filter(t => t.status === 'pending' || t.status === 'in_progress').length;
+            if (activeTasks >= 10) {
+                showToast('⚠️ 負載過重！目前已有 10 個未完成任務，請先清空再新增。', 'danger');
+                return;
+            }
+            
+            editingTaskId = null;
+            document.getElementById('create-view-title').innerText = "宣告新任務";
+            document.getElementById('create-submit-btn').innerText = "立下誓言 (SAVE)";
+            document.getElementById('create-task-form').reset();
+            
+            switchView('view-create');
+        };
 
-                    <!-- 贊助支持區塊 (Buy me a coffee) -->
-                    <div class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8 text-center flex flex-col items-center justify-center">
-                        <div class="bg-white p-3 rounded-full shadow-sm mb-4 border border-amber-100">
-                            <i data-lucide="coffee" class="w-8 h-8 text-amber-600"></i>
-                        </div>
-                        <h2 class="text-xl font-bold text-stone-800 mb-2">請板主喝杯咖啡 ☕</h2>
-                        <p class="text-stone-600 mb-5 max-w-md mx-auto leading-relaxed text-sm">
-                            如果你覺得這些整理對你和毛孩有幫助，未來可以在這裡贊助一杯咖啡，支持我繼續維護與更新這個網站。
-                        </p>
-                        <button disabled class="px-6 py-2.5 bg-stone-300 text-stone-500 font-medium rounded-xl cursor-not-allowed flex items-center shadow-inner transition-all">
-                            <i data-lucide="external-link" class="w-4 h-4 mr-2"></i> 贊助功能建置中...
-                        </button>
-                    </div>
+        window.editTask = (id) => {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            editingTaskId = id;
+            document.getElementById('task-title').value = task.title;
+            document.getElementById('task-desc').value = task.desc || '';
+            
+            const d = new Date(task.deadline);
+            const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(d - tzoffset)).toISOString().slice(0, 16);
+            document.getElementById('task-deadline').value = localISOTime;
 
-                </main>
+            document.getElementById('create-view-title').innerText = "修改任務";
+            document.getElementById('create-submit-btn').innerText = "更新誓言 (UPDATE)";
+            
+            switchView('view-create');
+        };
 
-                <!-- 回到頂端按鈕 -->
-                <button id="backToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 bg-amber-500 text-white p-3 rounded-full shadow-lg hover:bg-amber-600 transition-all duration-300 z-50 opacity-0 pointer-events-none translate-y-4">
-                    <i data-lucide="arrow-up" class="w-6 h-6"></i>
-                </button>
-            `;
+        window.handleCreateTask = async (e) => {
+            e.preventDefault();
+            if (!userId) return;
 
-            app.innerHTML = html;
-            // 渲染後重新初始化圖示
-            lucide.createIcons();
+            const title = document.getElementById('task-title').value;
+            const deadline = document.getElementById('task-deadline').value;
+            const desc = document.getElementById('task-desc').value;
+            
+            if (!title || !deadline) return;
 
-            // 確保每次渲染後按鈕狀態是正確的
-            updateBackToTopButton();
+            const deadlineMs = new Date(deadline).getTime();
+            const now = new Date().getTime();
+            
+            if (deadlineMs <= now) {
+                showToast('⚠️ 時間設定錯誤！請設定未來的時間。', 'danger');
+                return;
+            }
+
+            const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
+            if (deadlineMs - now > twoWeeksMs) {
+                showToast('⚠️ 目標範圍過大！請將任務切小，截止時間不可超過兩週。', 'danger');
+                return;
+            }
+
+            try {
+                if (editingTaskId) {
+                    updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', editingTaskId), {
+                        title: title,
+                        desc: desc,
+                        deadline: deadlineMs,
+                        reminders: { p80: false, p90: false, p95: false, overdue: false, graceExpired: false }
+                    });
+                    editingTaskId = null;
+                } else {
+                    const newId = Date.now().toString() + Math.floor(Math.random()*1000);
+                    setDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', newId), {
+                        title: title,
+                        desc: desc,
+                        deadline: deadlineMs,
+                        startTime: null,
+                        lastCheckInTime: null, // 初始化查勤時間
+                        status: 'pending', 
+                        failReason: null,
+                        isGraceExpired: false, 
+                        reminders: { p80: false, p90: false, p95: false, overdue: false, graceExpired: false }
+                    });
+                }
+                
+                document.getElementById('task-title').value = '';
+                document.getElementById('task-deadline').value = '';
+                document.getElementById('task-desc').value = '';
+                switchView('view-dashboard');
+                
+            } catch (err) {
+                showToast('儲存失敗，請重試', 'danger');
+            }
+        };
+
+        window.startTask = async (id) => {
+            if (!userId) return;
+            const now = new Date().getTime();
+            try {
+                updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', id), {
+                    status: 'in_progress',
+                    startTime: now,
+                    lastCheckInTime: now // 開始任務時寫入第一次的查勤基準點
+                });
+            } catch(e) {
+                showToast('啟動失敗，請重試', 'danger');
+            }
+        };
+
+        // --- 查勤點名邏輯 (Check-in System) ---
+        window.openCheckInModal = (task) => {
+            isCheckInModalOpen = true;
+            document.getElementById('checkin-task-title').innerText = task.title;
+            
+            // 綁定按鈕事件
+            document.getElementById('btn-confirm-checkin').onclick = () => confirmCheckIn(task.id);
+            document.getElementById('btn-fail-checkin').onclick = () => failCheckIn(task.id);
+            
+            // 顯示查勤彈窗
+            const modal = document.getElementById('view-checkin');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // 強制壓迫：發出聲音與桌面通知
+            window.playAlertSound();
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("🚨 專注點名！", {
+                    body: `你還在處理「${task.title}」嗎？還是已經分心了？請立刻回報！`,
+                    icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" 
+                });
+            }
+        };
+
+        window.confirmCheckIn = (taskId) => {
+            if (!userId) return;
+            // 更新最後查勤時間
+            updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', taskId), {
+                lastCheckInTime: new Date().getTime()
+            });
+            
+            // 關閉彈窗
+            const modal = document.getElementById('view-checkin');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isCheckInModalOpen = false;
+            showToast('✅ 點名完成，請繼續保持專注。', 'warning');
+        };
+
+        window.failCheckIn = (taskId) => {
+            // 承認分心，直接踢到失敗覆盤頁面
+            const modal = document.getElementById('view-checkin');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isCheckInModalOpen = false;
+            window.openFailureScreen(taskId);
+            showToast('💀 意志力潰散被系統捕獲，請進行覆盤。', 'danger');
+        };
+
+
+        window.enterFocusMode = (id) => {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                currentFocusTaskId = id;
+                document.getElementById('focus-title').innerText = task.title;
+                document.getElementById('focus-desc').innerText = task.desc || '';
+                switchView('view-focus');
+                updateTimers(); 
+            }
+        };
+
+        window.completeTask = async (id) => {
+            if (!userId) return;
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            const now = new Date().getTime();
+            const totalDuration = task.startTime ? (task.deadline - task.startTime) : 0;
+            const gracePeriod = totalDuration * 0.10;
+            
+            try {
+                updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', id), {
+                    status: 'completed',
+                    completedOverdue: now > task.deadline,
+                    extremeOverdue: now > (task.deadline + gracePeriod)
+                });
+                if (currentFocusTaskId === id) currentFocusTaskId = null;
+                switchView('view-dashboard');
+            } catch(e) {
+                showToast('狀態更新失敗，請重試', 'danger');
+            }
+        };
+
+        // --- 刪除任務功能 ---
+        window.deleteTask = async (id) => {
+            if (!userId) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', id));
+                showToast("任務紀錄已永久刪除", "warning");
+            } catch(e) {
+                showToast("刪除失敗，請檢查網路連線", "danger");
+            }
+        };
+
+        window.completeFocusTask = () => {
+            if(currentFocusTaskId) window.completeTask(currentFocusTaskId);
+        };
+
+        window.abandonFocusTask = () => {
+            if(currentFocusTaskId) window.openFailureScreen(currentFocusTaskId);
+        };
+
+        window.openFailureScreen = (id) => {
+            failingTaskId = id;
+            document.getElementById('failure-form').reset();
+            switchView('view-failure');
+        };
+
+        window.submitFailure = async (e) => {
+            e.preventDefault();
+            if (!userId || !failingTaskId) return;
+
+            const reason = document.querySelector('input[name="reason"]:checked').value;
+            const notes = document.getElementById('failure-notes').value;
+            const fullReason = reason + (notes ? ` - ${notes}` : '');
+            
+            try {
+                updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', failingTaskId), {
+                    status: 'failed',
+                    failReason: fullReason
+                });
+                failingTaskId = null;
+                if (currentFocusTaskId === failingTaskId) currentFocusTaskId = null;
+                switchView('view-dashboard');
+            } catch(err) {
+                showToast('提交失敗，請重試', 'danger');
+            }
+        };
+
+        // --- 核心邏輯 ---
+        function getRemainingTimeString(deadlineMs) {
+            const now = new Date().getTime();
+            const diff = deadlineMs - now;
+            const isOverdue = diff <= 0;
+            const absDiff = Math.abs(diff);
+
+            const hours = Math.floor(absDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((absDiff % (1000 * 60)) / 1000);
+
+            const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            return isOverdue ? `-${timeStr} (已逾期)` : timeStr;
         }
 
-        // 回到頂端按鈕的顯示邏輯
-        function updateBackToTopButton() {
-            const btn = document.getElementById('backToTopBtn');
-            if (btn) {
-                if (window.scrollY > 300) {
-                    btn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-                    btn.classList.add('opacity-100', 'translate-y-0');
-                } else {
-                    btn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-                    btn.classList.remove('opacity-100', 'translate-y-0');
+        function renderTasks() {
+            const listContainer = document.getElementById('task-list');
+            document.getElementById('dashboard-quote').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            if (tasks.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-10 text-zinc-400 font-bold border-2 border-dashed border-zinc-300">
+                        目前沒有任務。<br>建立一個目標，開始行動。
+                    </div>`;
+                return;
+            }
+
+            const sortedTasks = [...tasks].sort((a, b) => {
+                const statusOrder = { 'in_progress': 1, 'pending': 2, 'completed': 3, 'failed': 4 };
+                return statusOrder[a.status] - statusOrder[b.status];
+            });
+
+            listContainer.innerHTML = sortedTasks.map(task => {
+                const deadlineDate = new Date(task.deadline);
+                const deadlineStr = `${deadlineDate.getMonth()+1}/${deadlineDate.getDate()} ${String(deadlineDate.getHours()).padStart(2,'0')}:${String(deadlineDate.getMinutes()).padStart(2,'0')}`;
+                
+                let cardHTML = '';
+                
+                if (task.status === 'pending') {
+                    cardHTML = `
+                        <div class="bg-white p-5 strict-border-static">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-black text-lg text-zinc-900">${task.title}</h3>
+                                <span class="text-xs font-black px-2 py-1 bg-zinc-200 text-zinc-800 border border-zinc-400">STANDBY</span>
+                            </div>
+                            ${task.desc ? `<div class="text-sm text-zinc-600 mb-3 line-clamp-2">${task.desc}</div>` : ''}
+                            <div class="text-sm font-bold text-zinc-500 mb-4">截止時間：${deadlineStr}</div>
+                            <div class="flex gap-2">
+                                <button onclick="editTask('${task.id}')" class="bg-zinc-200 text-zinc-700 px-4 py-3 font-black hover:bg-zinc-300 transition text-sm">修改</button>
+                                <button onclick="startTask('${task.id}')" class="flex-1 bg-zinc-900 text-white py-3 font-black hover:bg-zinc-800 transition">開始執行 (START)</button>
+                            </div>
+                        </div>`;
+                } else if (task.status === 'in_progress') {
+                    cardHTML = `
+                        <div class="bg-zinc-900 text-white p-5 strict-border-static">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-black text-lg">${task.title}</h3>
+                                <span class="text-xs font-black px-2 py-1 bg-red-600 text-white">ACTIVE</span>
+                            </div>
+                            ${task.desc ? `<div class="text-sm text-zinc-400 mb-3 line-clamp-2">${task.desc}</div>` : ''}
+                            <div class="text-2xl font-mono text-red-400 font-light tracking-widest mb-4 timer-display" data-deadline="${task.deadline}">
+                                ${getRemainingTimeString(task.deadline)}
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="enterFocusMode('${task.id}')" class="flex-1 bg-zinc-700 text-white py-2 font-black hover:bg-zinc-600 transition text-sm">專注模式</button>
+                                <button onclick="completeTask('${task.id}')" class="flex-1 bg-white text-zinc-900 py-2 font-black hover:bg-zinc-200 transition text-sm">完成</button>
+                                <button onclick="openFailureScreen('${task.id}')" class="bg-transparent border border-zinc-600 text-zinc-400 px-3 py-2 font-black hover:text-red-400 hover:border-red-400 transition text-sm">放棄</button>
+                            </div>
+                        </div>`;
+                } else if (task.status === 'completed') {
+                    let badgeClass = "bg-green-200 text-green-900 border-green-300";
+                    let badgeText = "DONE";
+                    if (task.extremeOverdue) {
+                        badgeClass = "bg-red-200 text-red-900 border-red-300";
+                        badgeText = "💀 DONE (EXTREME)";
+                    } else if (task.completedOverdue) {
+                        badgeClass = "bg-yellow-200 text-yellow-900 border-yellow-300";
+                        badgeText = "DONE (LATE)";
+                    }
+                    cardHTML = `
+                        <div class="bg-zinc-100 p-5 border-2 border-zinc-200 opacity-80">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-black text-lg text-zinc-700 line-through">${task.title}</h3>
+                                <span class="text-xs font-black px-2 py-1 ${badgeClass} border">${badgeText}</span>
+                            </div>
+                            <div class="flex justify-end mt-4">
+                                <button onclick="deleteTask('${task.id}')" class="text-[10px] font-black border border-zinc-300 text-zinc-400 px-2 py-1 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">刪除紀錄</button>
+                            </div>
+                        </div>`;
+                } else if (task.status === 'failed') {
+                    cardHTML = `
+                        <div class="bg-red-50 p-5 border-2 border-red-200 opacity-90">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-black text-lg text-red-900 line-through">${task.title}</h3>
+                                <span class="text-xs font-black px-2 py-1 bg-red-200 text-red-900 border border-red-300">RESTART</span>
+                            </div>
+                            <div class="text-sm font-bold text-red-700">卡關原因：${task.failReason}</div>
+                            <div class="flex justify-end mt-4">
+                                <button onclick="deleteTask('${task.id}')" class="text-[10px] font-black border border-red-300 text-red-400 px-2 py-1 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">刪除紀錄</button>
+                            </div>
+                        </div>`;
+                }
+                return cardHTML;
+            }).join('');
+        }
+
+        function updateTimers() {
+            if (!userId || tasks.length === 0) return;
+            const now = new Date().getTime();
+
+            tasks.forEach(task => {
+                if (!task.reminders) task.reminders = { p80: false, p90: false, p95: false, overdue: false, graceExpired: false };
+                let needCloudUpdate = false;
+
+                if (task.status === 'in_progress' && task.startTime) {
+                    const totalDuration = task.deadline - task.startTime;
+                    const elapsed = now - task.startTime;
+                    const percent = elapsed / totalDuration;
+                    
+                    const gracePeriod = totalDuration * 0.10;
+                    const timeOverdue = now - task.deadline;
+                    const remainingStr = getRemainingTimeString(task.deadline).replace('-', '').replace(' (已逾期)', '');
+
+                    // 🚨 查勤點名邏輯 (Check-in Logic): 30 分鐘 = 30 * 60 * 1000 = 1800000 毫秒
+                    const CHECKIN_INTERVAL = 30 * 60 * 1000;
+                    const lastCheck = task.lastCheckInTime || task.startTime; 
+                    if ((now - lastCheck) >= CHECKIN_INTERVAL && !isCheckInModalOpen) {
+                        openCheckInModal(task);
+                    }
+
+                    // 進度與逾期提醒邏輯
+                    if (timeOverdue > gracePeriod) {
+                        if (!task.reminders.graceExpired) {
+                            showToast(`💀 任務「${task.title}」已超過 10% 緩衝期！這是一場苦戰，但你仍可完成它。`, 'danger');
+                            task.reminders.graceExpired = true;
+                            task.isGraceExpired = true;
+                            needCloudUpdate = true;
+                        }
+                    } else if (percent >= 1 && !task.reminders.overdue) {
+                        showToast(`⚠️ 任務「${task.title}」已逾期！你進入了 10% 緩衝期，請盡速完成。`, 'warning');
+                        task.reminders.overdue = true;
+                        task.reminders.p95 = true;
+                        task.reminders.p90 = true;
+                        task.reminders.p80 = true;
+                        needCloudUpdate = true;
+                    } else if (percent >= 0.95 && percent < 1 && !task.reminders.p95) {
+                        showToast(`🔥 截止時間逼近：任務「${task.title}」只剩下 ${remainingStr}！`, 'danger');
+                        task.reminders.p95 = true;
+                        task.reminders.p90 = true;
+                        task.reminders.p80 = true;
+                        needCloudUpdate = true;
+                    } else if (percent >= 0.90 && percent < 0.95 && !task.reminders.p90) {
+                        showToast(`⚠️ 危險：任務「${task.title}」只剩下 ${remainingStr}！`, 'warning');
+                        task.reminders.p90 = true;
+                        task.reminders.p80 = true;
+                        needCloudUpdate = true;
+                    } else if (percent >= 0.80 && percent < 0.90 && !task.reminders.p80) {
+                        showToast(`⏱️ 警告：任務「${task.title}」剩下 ${remainingStr}！`, 'warning');
+                        task.reminders.p80 = true;
+                        needCloudUpdate = true;
+                    }
+                } else if (task.status === 'pending') {
+                    const diff = task.deadline - now;
+                    if (diff <= 0 && !task.reminders.overdue) {
+                        showToast(`💀 任務「${task.title}」未開始就已逾期！`, 'danger');
+                        task.reminders.overdue = true;
+                        needCloudUpdate = true;
+                    }
+                }
+
+                // 為了避免頻繁寫入資料庫，只在跨越提醒邊界時才更新雲端紀錄
+                if (needCloudUpdate) {
+                    updateDoc(doc(db, 'artifacts', appId, 'users', userId, 'tasks', task.id), {
+                        reminders: task.reminders,
+                        isGraceExpired: task.isGraceExpired || false
+                    }).catch(e => console.error("Reminder update failed", e));
+                }
+            });
+
+            const displays = document.querySelectorAll('.timer-display');
+            displays.forEach(display => {
+                const deadline = parseInt(display.getAttribute('data-deadline'));
+                display.innerText = getRemainingTimeString(deadline);
+            });
+
+            if (currentFocusTaskId && !document.getElementById('view-focus').classList.contains('hidden')) {
+                const task = tasks.find(t => t.id === currentFocusTaskId);
+                if (task) {
+                    document.getElementById('focus-timer').innerText = getRemainingTimeString(task.deadline);
                 }
             }
         }
 
-        // 監聽網頁捲動事件
-        window.addEventListener('scroll', updateBackToTopButton);
+        function showToast(message, type='warning') {
+            // 1. 網頁內部的 Toast 提示
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded shadow-lg font-bold text-sm transform transition-all duration-300 -translate-y-10 opacity-0 ${type === 'warning' ? 'bg-zinc-800 text-white border border-zinc-600' : 'bg-red-600 text-white'}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('-translate-y-10', 'opacity-0');
+            });
 
-        // 首次渲染
-        render();
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+
+            // 2. 如果是嚴重警告(danger)，強制發出警報音效
+            if (type === 'danger') {
+                window.playAlertSound();
+            }
+
+            // 3. 觸發系統級桌面通知 (加裝 try-catch 防護，避免瀏覽器安全限制導致當機)
+            try {
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("ENFORCE. 系統警告", {
+                        body: message,
+                        icon: "https://cdn-icons-png.flaticon.com/512/179/179386.png" 
+                    });
+                }
+            } catch (error) {
+                console.warn("桌面通知無法顯示:", error);
+            }
+        }
+
+        function renderAnalytics() {
+            const total = tasks.filter(t => t.status === 'completed' || t.status === 'failed').length;
+            const onTime = tasks.filter(t => t.status === 'completed' && !t.completedOverdue).length;
+            const late = tasks.filter(t => t.status === 'completed' && t.completedOverdue).length;
+            
+            const onTimeRate = total > 0 ? Math.round((onTime / total) * 100) : 0;
+            const lateRate = total > 0 ? Math.round((late / total) * 100) : 0;
+            
+            document.getElementById('analytics-rate-ontime').innerText = `${onTimeRate}%`;
+            document.getElementById('analytics-rate-late').innerText = `${lateRate}%`;
+            
+            const reasons = {};
+            tasks.filter(t => t.status === 'failed').forEach(t => {
+                if(!t.failReason) return;
+                const r = t.failReason.split(' - ')[0]; 
+                reasons[r] = (reasons[r] || 0) + 1;
+            });
+            
+            const reasonsHtml = Object.entries(reasons).map(([reason, count]) => {
+                return `<div class="flex justify-between border-b border-zinc-200 py-3">
+                    <span class="font-bold text-zinc-700">${reason}</span>
+                    <span class="font-black text-red-600">${count} 次</span>
+                </div>`;
+            }).join('');
+
+            document.getElementById('analytics-reasons').innerHTML = reasonsHtml || '<div class="text-zinc-400 font-bold py-4">目前沒有卡關紀錄。請繼續保持紀律。</div>';
+        }
+
+        // 要求桌面通知權限 (定義在 module 內部供 checkNotificationStatus 呼叫)
+        window.requestNotificationPermission = () => {
+            if ("Notification" in window && !hasRequestedNotification) {
+                if (Notification.permission === "default") {
+                    hasRequestedNotification = true; 
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            showToast("✅ 桌面通知已成功啟用！", "warning");
+                        }
+                    }).catch(e => console.warn("通知權限請求失敗:", e));
+                }
+            }
+        };
+
+        // 啟動流程
+        initFirebase();
+        
+        // 核心計時器與自動狀態更新
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            updateTimers();
+            window.checkNotificationStatus(); // 每秒檢查一次權限狀態，確保按鈕必定出現
+        }, 1000);
+
     </script>
 </body>
 </html>
