@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>犬貓腫瘤文章懶人包</title>
+    <!-- 引入 Tailwind CSS (負責排版與樣式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons (負責圖示) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans pb-20">
+
+    <div id="app"></div>
+
+    <script>
+        // ==========================================
+        // 🐾 資料區：未來你要新增/修改文章，直接在這裡改即可！
+        // ==========================================
+        const initialData = [
+            {
+                id: 'stage-1', title: '【發現】',
+                articles: [
+                    { id: 'a1-1', title: '當毛孩子可能面臨腫瘤，我們該怎麼做？', url: 'https://www.facebook.com/share/p/1FG49muZ6x/' },
+                    { id: 'a1-2', title: '腫瘤專科獸醫希望飼主初診前知道的五件事', url: 'https://www.threads.com/@cherryrbfdog/post/DL3xksOs3Rt?xmt=AQF0GdlEb0m2U2j581ZuPz-2kTHf9k22ax7XrvTyF6hd2w' },
+                    { id: 'a1-3', title: '獸醫師如何診斷腫瘤', url: 'https://bonheurvet.pixnet.net/blog/posts/16066175333' },
+                    { id: 'a1-4', title: '【飼主該知道的醫學名詞】腫瘤切掉就好了嗎？談「病理檢查」', url: 'https://vocus.cc/article/5f192648fd897800018a07e5' },
+                    { id: 'a1-5', title: '細針採樣', url: 'https://www.facebook.com/share/p/18ZDJfiqPw/' },
+                    { id: 'a1-6', title: '不明團塊的細針採樣', url: 'https://www.facebook.com/share/p/1aeHK6TGap/' },
+                    { id: 'a1-7', title: '細針細胞學檢查重點', url: 'https://www.facebook.com/share/p/17s8vxGUu2/' },
+                    { id: 'a1-8', title: '花了一堆錢做檢查，腫瘤也不一定能治療，有必要做這些檢查嗎？', url: 'http://www.vetcogroup.com/kids/index6.php?nowpage=1&nid=35' },
+                    { id: 'a1-9', title: '【飼主該知道的醫學名詞】為什麼要做那麼多檢查？談「鑑別診斷」', url: 'https://vocus.cc/article/5f0fa658fd897800017b8a63' },
+                    { id: 'a1-10', title: '【飼主該知道的醫學名詞】腫瘤病況多嚴重？談「癌症分期與分級」', url: 'https://vocus.cc/article/5f3910d1fd89780001d23099' }
+                ]
+            },
+            {
+                id: 'stage-2', title: '【治療決擇】',
+                articles: [
+                    { id: 'a2-1', title: '毛孩安寧緩和治療是什麼？能與積極治療並行嗎？', url: 'https://hehopets.com/archives/6500' },
+                    { id: 'a2-2', title: '治療方式的選擇 (1)', url: 'https://www.facebook.com/share/p/1HbpUcFRPr/' },
+                    { id: 'a2-3', title: '治療方式的選擇 (2)', url: 'https://www.facebook.com/share/p/1DPfLFwBz9/' },
+                    { id: 'a2-4', title: '治療方式的選擇 (3)', url: 'https://www.facebook.com/share/p/1HmBFzP62K/' },
+                    { id: 'a2-5', title: '"First, do no harm"-盡可能維持罹癌毛孩子良好生活品質前提下的癌症治療', url: 'https://www.facebook.com/share/p/175ugwMA3Y/' },
+                    { id: 'a2-6', title: 'CHOP-25、CHOP-19 どっち？', url: 'https://www.facebook.com/share/p/1DoDg8udpv/' },
+                    { id: 'a2-7', title: '惡性腫瘤的鐘擺治療', url: 'https://www.facebook.com/share/p/1GUTUAzzG7/' },
+                    { id: 'a2-8', title: '電脈衝化療簡介', url: 'https://www.facebook.com/share/p/17ocU1RGdB/' },
+                    { id: 'a2-9', title: '肢端腫瘤的替代療法--電脈衝化療', url: 'https://www.facebook.com/share/p/1GgyB5WHXB/' },
+                    { id: 'a2-10', title: '對病患最有利的治療', url: 'https://www.facebook.com/share/p/18Tme6oCTL/' },
+                    { id: 'a2-11', title: '那美好的仗，我已經打過了；該跑的路程，我已經跑盡了', url: 'https://www.facebook.com/share/p/172E8RVnei/' }
+                ]
+            },
+            {
+                id: 'stage-3', title: '【治療中】',
+                articles: [
+                    { id: 'a3-1', title: '各種飼主餵藥的技巧(重點：快、狠、準)', url: 'https://www.threads.com/@libruce168/post/DUAvXiDklg4?xmt=AQF0ovj9FvDn2zhmbDLPjj5eKDIeLm9CMoYnZgDHiIlJhg' },
+                    { id: 'a3-2', title: '狗貓不吃飯該怎麼辦？觀察動物食慾的小技巧', url: 'https://vocus.cc/article/5fc33d2dfd897800017605f0' },
+                    { id: 'a3-3', title: '癌症動物的營養需求', url: 'https://www.facebook.com/share/p/1As2Pdr58q/' },
+                    { id: 'a3-4', title: '腫瘤的保養品', url: 'https://www.facebook.com/share/p/1DgjZnhxXJ/' },
+                    { id: 'a3-5', title: '癌症的疼痛管理', url: 'https://www.facebook.com/share/p/1baWh1AQvz/' },
+                    { id: 'a3-6', title: '學習性食物嫌惡', url: 'https://www.facebook.com/share/p/1B1mdW3cse/' },
+                    { id: 'a3-7', title: '動物罹患腫瘤接受藥物治療，要怎麼知道到底有沒有效？', url: 'https://vocus.cc/article/5ffdd333fd89780001d6a483' },
+                    { id: 'a3-8', title: '【飼主該知道的醫學名詞】我的毛孩還能活多久？談「預後」', url: 'https://vocus.cc/article/5ef05974fd897800019b0e65' },
+                    { id: 'a3-9', title: '關於安寧舒緩治療', url: 'https://www.facebook.com/share/p/1FJravvNSK/' }
+                ]
+            },
+            {
+                id: 'stage-4', title: '【臨終】',
+                articles: [
+                    { id: 'a4-1', title: '癌症病患臨終前可能的症狀', url: 'https://www.facebook.com/share/p/1an2tLnhWh/' },
+                    { id: 'a4-2', title: '該送他離開嗎?重病動物的安寧照護與生活品質評估', url: 'https://vocus.cc/article/61c039fffd89780001cb0279' },
+                    { id: 'a4-3', title: '生活質量評估表', url: 'https://www.homewardpet.com.tw/quality' },
+                    { id: 'a4-4', title: '生活品質評估 - 如何評估疼痛？', url: 'https://www.homewardpet.com.tw/news/31' },
+                    { id: 'a4-5', title: '生活品質評估 - 如何評估食慾？', url: 'https://www.homewardpet.com.tw/news/47' },
+                    { id: 'a4-6', title: '生活品質評估 - 寵物的幸福感／快樂感', url: 'https://www.homewardpet.com.tw/news/38' },
+                    { id: 'a4-7', title: '生活品質評估 - 好日子與壞日子 - 主人的身心壓力', url: 'https://www.homewardpet.com.tw/news/28' },
+                    { id: 'a4-8', title: '當毛孩子邁入生命的最後階段', url: 'https://www.facebook.com/share/p/1Ciuo87o5K/' }
+                ]
+            },
+            {
+                id: 'stage-5', title: '【其它參考資訊】',
+                articles: [
+                    { id: 'a5-1', title: '貓咪常見腫瘤', url: 'https://www.facebook.com/share/p/1MJqRR32WW/' },
+                    { id: 'a5-2', title: '貓淋巴瘤風險因子', url: 'https://www.facebook.com/share/p/1BHxZ46QhV/' },
+                    { id: 'a5-3', title: '貓咪注射部位肉瘤（疫苗相關性肉瘤）', url: 'https://www.facebook.com/share/p/1AgmnxVU9m/' },
+                    { id: 'a5-4', title: '犬乳腺腫瘤的手術範圍', url: 'https://www.facebook.com/share/p/1Dv4kH48kC/' },
+                    { id: 'a5-5', title: '乳腺腫瘤治療上的幾個重點', url: 'https://www.facebook.com/share/p/18bT6tJjTN/' }
+                ]
+            }
+        ];
+
+        // 免責聲明文字
+        const disclaimerText = `1. 本網頁蒐集資訊僅供參考，蒐集這些資訊，只是希望飼主們碰到毛孩確診腫瘤後，可以更快的對腫瘤有初步的認識。
+2. 本網頁蒐集的資訊皆無跟任何動物醫院、醫師配合，純粹是板主站在覺得文章簡單、易懂的角度，還有前輩們經驗分享的資訊來蒐集文章。
+3. 關於毛孩的病況、檢查、治療方式…等等，依照個體的狀況及條件不同，請務必與您毛孩的腫瘤科醫師討論！`;
+
+        // 網站建置說明文字
+        const aboutText = `因板主自家貓咪於2026/3/4因淋巴瘤前往喵星，回想照顧貓咪的這段時間，除了這是我的第一隻貓外，也是我第一次碰到這種病，整個過程感到非常慌張，且沒有方向，即便上網蒐集資訊，也感到資訊散落各地，沒有系統化的網站指引飼主該怎麼來對這個病有個初步的了解，故架了這個網站，希望正走在這條路的飼主們能夠藉由這個網站快速了解腫瘤，並能較清楚的知道下一步要與腫瘤醫師討論什麼。`;
+
+        let state = {
+            categories: initialData,
+            expandedCats: ['stage-1']
+        };
+
+        // ==========================================
+        // ⚙️ 系統邏輯區：控制展開/收合
+        // ==========================================
+        function toggleCategory(id) {
+            if (state.expandedCats.includes(id)) {
+                state.expandedCats = state.expandedCats.filter(catId => catId !== id);
+            } else {
+                state.expandedCats.push(id);
+            }
+            render();
+        }
+
+        function expandAll() {
+            state.expandedCats = state.categories.map(cat => cat.id);
+            render();
+        }
+
+        function collapseAll() {
+            state.expandedCats = [];
+            render();
+        }
+
+        // ==========================================
+        // 🎨 畫面渲染區
+        // ==========================================
+        function render() {
+            const app = document.getElementById('app');
+            
+            let html = `
+                <!-- 頭部導覽列 -->
+                <header class="bg-white shadow-sm sticky top-0 z-10">
+                    <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <div class="bg-amber-500 p-2 rounded-lg text-white">
+                                <i data-lucide="link" class="w-6 h-6"></i>
+                            </div>
+                            <h1 class="text-xl font-bold text-stone-800">犬貓腫瘤文章懶人包</h1>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="max-w-3xl mx-auto px-4 mt-8 pb-12">
+                    <!-- 免責聲明 -->
+                    <div class="mb-6 p-4 sm:p-5 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg flex flex-col sm:flex-row items-start text-amber-900 shadow-sm transition-all">
+                        <div class="flex items-start flex-1 w-full">
+                            <i data-lucide="info" class="flex-shrink-0 mr-3 mt-0.5 text-amber-600 w-5 h-5 hidden sm:block"></i>
+                            <div class="text-sm leading-relaxed font-medium space-y-1.5 w-full">
+                                <div class="flex items-center mb-1">
+                                    <i data-lucide="info" class="flex-shrink-0 mr-2 text-amber-600 w-5 h-5 sm:hidden"></i>
+                                    <p class="font-bold text-base">免責聲明：</p>
+                                </div>
+                                ${disclaimerText.split('\n').map(line => {
+                                    // 自動偵測第3點並加上 正紅字 + 粗體 + 底線
+                                    if (line.trim().startsWith('3.')) {
+                                        return `<p class="text-red-600 font-bold underline decoration-2 underline-offset-4">${line}</p>`;
+                                    }
+                                    return `<p>${line}</p>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 展開/折疊控制列 -->
+                    <div class="flex justify-end space-x-4 mb-4">
+                        <button onclick="expandAll()" class="text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors">
+                            全部展開
+                        </button>
+                        <button onclick="collapseAll()" class="text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors">
+                            全部折疊
+                        </button>
+                    </div>
+
+                    <!-- 文章分類列表 -->
+                    <div class="space-y-5">
+                        ${state.categories.map(cat => {
+                            const isExpanded = state.expandedCats.includes(cat.id);
+                            
+                            let catHtml = `
+                            <div class="bg-white rounded-2xl transition-all duration-300 border ${isExpanded ? 'border-amber-200 shadow-md ring-2 ring-amber-50' : 'border-stone-200 shadow-sm hover:border-amber-200'} overflow-hidden">
+                                <button onclick="toggleCategory('${cat.id}')" title="點擊展開/折疊此階段" class="w-full px-5 py-4 flex items-center justify-between transition-colors ${isExpanded ? 'bg-amber-50/50' : 'bg-white hover:bg-stone-50'}">
+                                    <div class="flex items-center text-lg font-semibold text-stone-800">
+                                        <span class="mr-3 transition-transform duration-300 ${isExpanded ? 'text-amber-600' : 'text-amber-500'}">
+                                            <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-6 h-6"></i>
+                                        </span>
+                                        ${cat.title}
+                                        <span class="ml-3 text-xs font-normal transition-colors duration-300 ${isExpanded ? 'text-amber-700 bg-amber-100/80' : 'text-stone-500 bg-stone-100'} px-2.5 py-1 rounded-full">
+                                            ${cat.articles.length} 篇
+                                        </span>
+                                    </div>
+                                </button>
+                            `;
+
+                            if (isExpanded) {
+                                catHtml += `<div class="border-t border-amber-100/50 bg-stone-50/80 p-4 sm:pl-12 space-y-3 shadow-inner">`;
+                                
+                                cat.articles.forEach(art => {
+                                    catHtml += `
+                                    <div class="group flex items-center justify-between p-3.5 rounded-xl border transition-all duration-300 bg-white border-stone-200 shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5">
+                                        <a href="${art.url}" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="flex-1 flex items-start text-stone-700 hover:text-amber-700 mr-4">
+                                            <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                            <span class="font-medium leading-relaxed">${art.title}</span>
+                                        </a>
+                                    </div>`;
+                                });
+
+                                catHtml += `</div>`;
+                            }
+
+                            catHtml += `</div>`;
+                            return catHtml;
+                        }).join('')}
+                    </div>
+
+                    <!-- 網站建置說明區塊 -->
+                    <div class="mt-10 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
+                            <div class="bg-red-50 p-1.5 rounded-lg mr-3 shadow-sm border border-red-100">
+                                <i data-lucide="heart" class="w-5 h-5 text-red-500"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-stone-800">網站建置說明</h2>
+                        </div>
+                        <div class="p-5 sm:p-6 bg-white text-stone-700 leading-relaxed space-y-3">
+                            ${aboutText.split('\n').map(line => `<p>${line}</p>`).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 板主個人經驗分享區塊 -->
+                    <div class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
+                            <div class="bg-amber-100 p-1.5 rounded-lg mr-3 shadow-sm">
+                                <i data-lucide="book-open" class="w-5 h-5 text-amber-600"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-stone-800">板主個人經驗分享</h2>
+                        </div>
+                        <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner">
+                            <a href="https://www.threads.com/@lostforeverkim/post/DWMI1GaklBJ?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第一篇：從腫瘤確診到離世</span>
+                            </a>
+                            <a href="https://www.threads.com/@lostforeverkim/post/DWVTvjfEmPm?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第二篇：選擇治療的動物醫院</span>
+                            </a>
+                            <a href="https://www.threads.com/@lostforeverkim/post/DW4EkEAkm3d?xmt=AQF04QZI03GD5iV02B5XyYf_p7UFjsiuWMEIoL9yiq3spA" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第三篇：決定安寧的時機點</span>
+                            </a>
+                            
+                            <div class="mt-5 p-4 bg-amber-50 rounded-xl text-sm text-amber-900 border border-amber-200 shadow-sm flex items-start">
+                                <i data-lucide="message-square-heart" class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 text-amber-500"></i>
+                                <p class="leading-relaxed">文章同步刊登在FB【腫瘤貓~ 照護醫療社團】，社團需經審核才能加入，所以無法直接提供連結，建議加入社團，文章下有更多有經驗的前輩的分享留言。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 社群連結區塊 (Instagram & Threads) -->
+                    <div class="mt-6 flex justify-center space-x-4">
+                        <a href="https://www.instagram.com/lostforeverkim/" target="_blank" rel="noopener noreferrer" title="追蹤我的 Instagram" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-sm border border-stone-200 text-stone-400 hover:text-pink-600 hover:border-pink-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                             <!-- 內建 Instagram SVG 圖示 -->
+                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.threads.com/@lostforeverkim" target="_blank" rel="noopener noreferrer" title="追蹤我的 Threads" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-sm border border-stone-200 text-stone-400 hover:text-black hover:border-stone-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                            <!-- 內建 Threads SVG 圖示 -->
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M141.537 88.9883C140.71 88.5919 139.87 88.2104 139.019 87.8451C137.537 60.5382 122.616 44.905 97.5619 44.745C97.4484 44.7443 97.3355 44.7443 97.222 44.7443C82.2364 44.7443 69.7731 51.1409 62.102 62.7807L75.881 72.2328C81.6116 63.5383 90.6052 61.6848 97.2286 61.6848C97.3051 61.6848 97.3819 61.6848 97.4576 61.6855C105.707 61.7381 111.932 64.1366 115.961 68.814C118.893 72.2193 120.854 76.925 121.825 82.8638C114.511 81.6207 106.601 81.2385 98.145 81.7233C74.3247 83.0954 59.0111 96.9879 60.0396 116.292C60.5615 126.084 65.4397 134.508 73.775 140.011C80.8224 144.663 89.899 146.938 99.3323 146.423C111.79 145.74 121.563 140.987 128.381 132.296C133.559 125.696 136.834 117.143 138.28 106.366C144.217 109.949 148.617 114.664 151.047 120.332C155.179 129.967 155.42 145.8 142.501 158.708C131.182 170.016 117.576 174.908 97.0135 175.059C74.2042 174.89 56.9538 167.575 45.7381 153.317C35.2355 139.966 29.8077 120.682 29.6052 96C29.8077 71.3178 35.2355 52.0336 45.7381 38.6827C56.9538 24.4249 74.2039 17.11 97.0132 16.9405C119.988 17.1113 137.539 24.4614 149.184 38.788C154.894 45.8136 159.199 54.6488 162.037 64.9503L178.184 60.6422C174.744 47.9622 169.331 37.0357 161.965 27.974C147.036 9.60668 125.202 0.195148 97.0695 0H96.9569C68.8816 0.194473 47.2921 9.6418 32.7883 28.0793C19.8819 44.4864 13.2244 67.3157 13.0007 95.9325L13 96L13.0007 96.0675C13.2244 124.684 19.8819 147.514 32.7883 163.921C47.2921 182.358 68.8816 191.806 96.9569 192H97.0695C122.03 191.827 139.624 185.292 154.118 170.811C173.081 151.866 172.51 128.119 166.26 113.541C161.776 103.087 153.227 94.5962 141.537 88.9883ZM98.4405 129.507C88.0005 130.095 77.1544 125.409 76.6196 115.372C76.2232 107.93 81.9158 99.626 99.0812 98.6368C101.047 98.5234 102.976 98.468 104.871 98.468C111.106 98.468 116.939 99.0737 122.242 100.233C120.264 124.935 108.662 128.946 98.4405 129.507Z"></path>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- 贊助支持區塊 (Buy me a coffee) -->
+                    <div class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8 text-center flex flex-col items-center justify-center">
+                        <div class="bg-white p-3 rounded-full shadow-sm mb-4 border border-amber-100">
+                            <i data-lucide="coffee" class="w-8 h-8 text-amber-600"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-stone-800 mb-2">請板主喝杯咖啡 ☕</h2>
+                        <p class="text-stone-600 mb-5 max-w-md mx-auto leading-relaxed text-sm">
+                            如果你覺得這些整理對你和毛孩有幫助，未來可以在這裡贊助一杯咖啡，支持我繼續維護與更新這個網站。
+                        </p>
+                        <button disabled class="px-6 py-2.5 bg-stone-300 text-stone-500 font-medium rounded-xl cursor-not-allowed flex items-center shadow-inner transition-all">
+                            <i data-lucide="external-link" class="w-4 h-4 mr-2"></i> 贊助功能建置中...
+                        </button>
+                    </div>
+
+                </main>
+
+                <!-- 回到頂端按鈕 -->
+                <button id="backToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 bg-amber-500 text-white p-3 rounded-full shadow-lg hover:bg-amber-600 transition-all duration-300 z-50 opacity-0 pointer-events-none translate-y-4">
+                    <i data-lucide="arrow-up" class="w-6 h-6"></i>
+                </button>
+            `;
+
+            app.innerHTML = html;
+            // 渲染後重新初始化圖示
+            lucide.createIcons();
+
+            // 確保每次渲染後按鈕狀態是正確的
+            updateBackToTopButton();
+        }
+
+        // 回到頂端按鈕的顯示邏輯
+        function updateBackToTopButton() {
+            const btn = document.getElementById('backToTopBtn');
+            if (btn) {
+                if (window.scrollY > 300) {
+                    btn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                    btn.classList.add('opacity-100', 'translate-y-0');
+                } else {
+                    btn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+                    btn.classList.remove('opacity-100', 'translate-y-0');
+                }
+            }
+        }
+
+        // 監聽網頁捲動事件
+        window.addEventListener('scroll', updateBackToTopButton);
+
+        // 首次渲染
+        render();
+    </script>
+</body>
+</html>
