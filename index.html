@@ -8,6 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Lucide Icons (負責圖示) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 隱藏導覽列的捲軸，但保留手指滑動功能，增加美觀 */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="min-h-screen bg-stone-50 font-sans pb-20">
 
@@ -83,7 +88,8 @@
                     { id: 'a5-2', title: '貓淋巴瘤風險因子', url: 'https://www.facebook.com/share/p/1BHxZ46QhV/' },
                     { id: 'a5-3', title: '貓咪注射部位肉瘤（疫苗相關性肉瘤）', url: 'https://www.facebook.com/share/p/1AgmnxVU9m/' },
                     { id: 'a5-4', title: '犬乳腺腫瘤的手術範圍', url: 'https://www.facebook.com/share/p/1Dv4kH48kC/' },
-                    { id: 'a5-5', title: '乳腺腫瘤治療上的幾個重點', url: 'https://www.facebook.com/share/p/18bT6tJjTN/' }
+                    { id: 'a5-5', title: '乳腺腫瘤治療上的幾個重點', url: 'https://www.facebook.com/share/p/18bT6tJjTN/' },
+                    { id: 'a5-6', title: '關於貓咪嘔吐', url: 'https://www.threads.com/@urmomovet/post/DYPXuX1Ef6h?xmt=AQG0YFZHNPPM_zjc-Fw1DO9x-_sinQkxwvSzck2iOUPn9Q' }
                 ]
             }
         ];
@@ -163,6 +169,27 @@
                         </div>
                     </div>
 
+                    <!-- 快速導覽列 (新增) -->
+                    <div class="mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div class="flex space-x-3 min-w-max">
+                            <button onclick="document.getElementById('articles-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="list" class="w-4 h-4 mr-2"></i>懶人包文章
+                            </button>
+                            <button onclick="document.getElementById('about-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="info" class="w-4 h-4 mr-2"></i>網站建置說明
+                            </button>
+                            <button onclick="document.getElementById('my-experience').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="book-open" class="w-4 h-4 mr-2"></i>板主經驗分享
+                            </button>
+                            <button onclick="document.getElementById('friends-experience').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="users" class="w-4 h-4 mr-2"></i>貓友經驗分享
+                            </button>
+                            <button onclick="document.getElementById('coffee-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-orange-600 hover:border-orange-300 hover:bg-orange-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="coffee" class="w-4 h-4 mr-2"></i>請喝杯咖啡
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- 展開/折疊控制列 -->
                     <div class="flex justify-end space-x-4 mb-4">
                         <button onclick="expandAll()" class="text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors">
@@ -174,7 +201,7 @@
                     </div>
 
                     <!-- 文章分類列表 -->
-                    <div class="space-y-5">
+                    <div id="articles-section" class="space-y-5 scroll-mt-24">
                         ${state.categories.map(cat => {
                             const isExpanded = state.expandedCats.includes(cat.id);
                             
@@ -215,7 +242,7 @@
                     </div>
 
                     <!-- 網站建置說明區塊 -->
-                    <div class="mt-10 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                    <div id="about-section" class="mt-10 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24">
                         <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
                             <div class="bg-red-50 p-1.5 rounded-lg mr-3 shadow-sm border border-red-100">
                                 <i data-lucide="heart" class="w-5 h-5 text-red-500"></i>
@@ -228,7 +255,7 @@
                     </div>
 
                     <!-- 板主個人經驗分享區塊 -->
-                    <div class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                    <div id="my-experience" class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24">
                         <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
                             <div class="bg-amber-100 p-1.5 rounded-lg mr-3 shadow-sm">
                                 <i data-lucide="book-open" class="w-5 h-5 text-amber-600"></i>
@@ -256,6 +283,22 @@
                         </div>
                     </div>
 
+                    <!-- 貓友經驗分享區塊 -->
+                    <div id="friends-experience" class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24">
+                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
+                            <div class="bg-blue-100 p-1.5 rounded-lg mr-3 shadow-sm">
+                                <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-stone-800">貓友經驗分享</h2>
+                        </div>
+                        <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner">
+                            <a href="https://www.threads.com/@houtaroukun/post/DYQd3-rEpzm?xmt=AQG0vgUfb0HLanH54YtXBbwvUd39RykUYY43Oo4bOTnjJg" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-blue-300 hover:-translate-y-0.5 transition-all duration-300">
+                                <i data-lucide="pointer" class="text-blue-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-blue-600 transition-transform duration-300"></i>
+                                <span class="text-stone-700 group-hover:text-blue-700 font-medium">回顧黑豆確診腸胃道淋巴癌病史到離世與醫藥費治療總額計算</span>
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- 社群連結區塊 (Instagram & Threads) -->
                     <div class="mt-6 flex justify-center space-x-4">
                         <a href="https://www.instagram.com/lostforeverkim/" target="_blank" rel="noopener noreferrer" title="追蹤我的 Instagram" class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-sm border border-stone-200 text-stone-400 hover:text-pink-600 hover:border-pink-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
@@ -273,7 +316,7 @@
                     </div>
 
                     <!-- 贊助支持區塊 (Buy me a coffee) -->
-                    <div class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8 text-center flex flex-col items-center justify-center">
+                    <div id="coffee-section" class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8 text-center flex flex-col items-center justify-center scroll-mt-24">
                         <div class="bg-white p-3 rounded-full shadow-sm mb-4 border border-amber-100">
                             <i data-lucide="coffee" class="w-8 h-8 text-amber-600"></i>
                         </div>
