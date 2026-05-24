@@ -8,11 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Lucide Icons (負責圖示) -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        /* 隱藏導覽列的捲軸，但保留手指滑動功能，增加美觀 */
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
 </head>
 <body class="min-h-screen bg-stone-50 font-sans pb-20">
 
@@ -170,23 +165,23 @@
                         </div>
                     </div>
 
-                    <!-- 快速導覽列 -->
-                    <div class="mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-                        <div class="flex space-x-3 min-w-max">
-                            <button onclick="document.getElementById('articles-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
-                                <i data-lucide="list" class="w-4 h-4 mr-2"></i>懶人包文章
+                    <!-- 快速導覽列 (改為自動換行排列，不再需要左右滑動) -->
+                    <div class="mb-6">
+                        <div class="flex flex-wrap gap-2.5 sm:gap-3">
+                            <button onclick="document.getElementById('articles-section').scrollIntoView({behavior: 'smooth'})" class="px-3 py-2 sm:px-4 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="list" class="w-4 h-4 mr-2 flex-shrink-0"></i>懶人包文章
                             </button>
-                            <button onclick="document.getElementById('about-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
-                                <i data-lucide="info" class="w-4 h-4 mr-2"></i>網站建置說明
+                            <button onclick="document.getElementById('about-section').scrollIntoView({behavior: 'smooth'})" class="px-3 py-2 sm:px-4 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="info" class="w-4 h-4 mr-2 flex-shrink-0"></i>網站建置說明
                             </button>
-                            <button onclick="document.getElementById('my-experience').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
-                                <i data-lucide="book-open" class="w-4 h-4 mr-2"></i>板主經驗分享
+                            <button onclick="document.getElementById('my-experience').scrollIntoView({behavior: 'smooth'})" class="px-3 py-2 sm:px-4 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="book-open" class="w-4 h-4 mr-2 flex-shrink-0"></i>板主經驗分享
                             </button>
-                            <button onclick="document.getElementById('friends-experience').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all shadow-sm flex items-center">
-                                <i data-lucide="users" class="w-4 h-4 mr-2"></i>貓友經驗分享
+                            <button onclick="document.getElementById('friends-experience').scrollIntoView({behavior: 'smooth'})" class="px-3 py-2 sm:px-4 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="users" class="w-4 h-4 mr-2 flex-shrink-0"></i>貓友經驗分享
                             </button>
-                            <button onclick="document.getElementById('coffee-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-orange-600 hover:border-orange-300 hover:bg-orange-50 transition-all shadow-sm flex items-center">
-                                <i data-lucide="coffee" class="w-4 h-4 mr-2"></i>請喝杯咖啡
+                            <button onclick="document.getElementById('coffee-section').scrollIntoView({behavior: 'smooth'})" class="px-3 py-2 sm:px-4 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-orange-600 hover:border-orange-300 hover:bg-orange-50 transition-all shadow-sm flex items-center">
+                                <i data-lucide="coffee" class="w-4 h-4 mr-2 flex-shrink-0"></i>請喝杯咖啡
                             </button>
                         </div>
                     </div>
