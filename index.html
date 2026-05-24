@@ -59,6 +59,7 @@
                 articles: [
                     { id: 'a3-1', title: '各種飼主餵藥的技巧(重點：快、狠、準)', url: 'https://www.threads.com/@libruce168/post/DUAvXiDklg4?xmt=AQF0ovj9FvDn2zhmbDLPjj5eKDIeLm9CMoYnZgDHiIlJhg' },
                     { id: 'a3-2', title: '狗貓不吃飯該怎麼辦？觀察動物食慾的小技巧', url: 'https://vocus.cc/article/5fc33d2dfd897800017605f0' },
+                    { id: 'a3-10', title: '要不要考慮裝鼻胃管/食道胃管？', url: 'https://www.threads.com/@vet.dr.lai/post/DUVrnAhmXox?xmt=AQG0Q2QbJM7dzBLFiuI3kdPLJoks-jSX1Hzni13DdHD6lg' },
                     { id: 'a3-3', title: '癌症動物的營養需求', url: 'https://www.facebook.com/share/p/1As2Pdr58q/' },
                     { id: 'a3-4', title: '腫瘤的保養品', url: 'https://www.facebook.com/share/p/1DgjZnhxXJ/' },
                     { id: 'a3-5', title: '癌症的疼痛管理', url: 'https://www.facebook.com/share/p/1baWh1AQvz/' },
@@ -100,7 +101,7 @@
 3. 關於毛孩的病況、檢查、治療方式…等等，依照個體的狀況及條件不同，請務必與您毛孩的腫瘤科醫師討論！`;
 
         // 網站建置說明文字
-        const aboutText = `因板主自家貓咪於2026/3/4因胃部高惡性度淋巴瘤前往喵星，回想照顧貓咪的這段時間，除了這是我的第一隻貓外，也是我第一次碰到這種病，整個過程感到非常慌張，且沒有方向，即便上網蒐集資訊，也感到資訊散落各地，沒有系統化的網站指引飼主該怎麼來對這個病有個初步的了解，故架了這個網站，希望正走在這條路的飼主們能夠藉由這個網站快速了解腫瘤，並能較清楚的知道下一步要與腫瘤醫師討論什麼。`;
+        const aboutText = `因板主自家貓咪於2026/3/4因淋巴瘤前往喵星，回想照顧貓咪的這段時間，除了這是我的第一隻貓外，也是我第一次碰到這種病，整個過程感到非常慌張，且沒有方向，即便上網蒐集資訊，也感到資訊散落各地，沒有系統化的網站指引飼主該怎麼來對這個病有個初步的了解，故架了這個網站，希望正走在這條路的飼主們能夠藉由這個網站快速了解腫瘤，並能較清楚的知道下一步要與腫瘤醫師討論什麼。`;
 
         let state = {
             categories: initialData,
@@ -169,7 +170,7 @@
                         </div>
                     </div>
 
-                    <!-- 快速導覽列 (新增) -->
+                    <!-- 快速導覽列 -->
                     <div class="mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
                         <div class="flex space-x-3 min-w-max">
                             <button onclick="document.getElementById('articles-section').scrollIntoView({behavior: 'smooth'})" class="px-4 py-2 bg-white border border-stone-200 rounded-full text-sm font-medium text-stone-600 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all shadow-sm flex items-center">
@@ -223,11 +224,13 @@
                             if (isExpanded) {
                                 catHtml += `<div class="border-t border-amber-100/50 bg-stone-50/80 p-4 sm:pl-12 space-y-3 shadow-inner">`;
                                 
-                                cat.articles.forEach(art => {
+                                // 加入第二個參數 index 來取得陣列順序，自動加上編號
+                                cat.articles.forEach((art, index) => {
                                     catHtml += `
                                     <div class="group flex items-center justify-between p-3.5 rounded-xl border transition-all duration-300 bg-white border-stone-200 shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5">
                                         <a href="${art.url}" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="flex-1 flex items-start text-stone-700 hover:text-amber-700 mr-4">
                                             <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                            <span class="font-bold text-amber-500 mr-2 flex-shrink-0">${index + 1}.</span>
                                             <span class="font-medium leading-relaxed">${art.title}</span>
                                         </a>
                                     </div>`;
@@ -254,50 +257,61 @@
                         </div>
                     </div>
 
-                    <!-- 板主個人經驗分享區塊 -->
-                    <div id="my-experience" class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24">
-                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
-                            <div class="bg-amber-100 p-1.5 rounded-lg mr-3 shadow-sm">
-                                <i data-lucide="book-open" class="w-5 h-5 text-amber-600"></i>
+                    <!-- 經驗分享雙欄佈局 (平板以上並排，手機維持上下) -->
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- 板主個人經驗分享區塊 -->
+                        <div id="my-experience" class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24 flex flex-col">
+                            <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
+                                <div class="bg-amber-100 p-1.5 rounded-lg mr-3 shadow-sm">
+                                    <i data-lucide="book-open" class="w-5 h-5 text-amber-600"></i>
+                                </div>
+                                <h2 class="text-lg font-bold text-stone-800">板主個人經驗分享</h2>
                             </div>
-                            <h2 class="text-lg font-bold text-stone-800">板主個人經驗分享</h2>
-                        </div>
-                        <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner">
-                            <a href="https://www.threads.com/@lostforeverkim/post/DWMI1GaklBJ?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第一篇：從腫瘤確診到離世</span>
-                            </a>
-                            <a href="https://www.threads.com/@lostforeverkim/post/DWVTvjfEmPm?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第二篇：選擇治療的動物醫院</span>
-                            </a>
-                            <a href="https://www.threads.com/@lostforeverkim/post/DW4EkEAkm3d?xmt=AQF04QZI03GD5iV02B5XyYf_p7UFjsiuWMEIoL9yiq3spA" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-amber-700 font-medium">第三篇：決定安寧的時機點</span>
-                            </a>
-                            
-                            <div class="mt-5 p-4 bg-amber-50 rounded-xl text-sm text-amber-900 border border-amber-200 shadow-sm flex items-start">
-                                <i data-lucide="message-square-heart" class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 text-amber-500"></i>
-                                <p class="leading-relaxed">文章同步刊登在<a href="https://www.facebook.com/groups/741830676024950" target="_blank" rel="noopener noreferrer" class="font-bold text-amber-700 hover:text-amber-600 underline transition-colors">FB【腫瘤貓~ 照護醫療社團】</a>，社團需經審核才能加入，所以無法直接提供連結，建議加入社團，文章下有更多有經驗的前輩的分享留言。</p>
+                            <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner flex-1 flex flex-col">
+                                <a href="https://www.threads.com/@lostforeverkim/post/DWMI1GaklBJ?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                    <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                    <span class="text-stone-700 group-hover:text-amber-700 font-medium">第一篇：從腫瘤確診到離世</span>
+                                </a>
+                                <a href="https://www.threads.com/@lostforeverkim/post/DWVTvjfEmPm?xmt=AQF0dHw0aWNrfMcuXgc-JUrJr2rZztKMDL7IoC4qIRR4Kw" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                    <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                    <span class="text-stone-700 group-hover:text-amber-700 font-medium">第二篇：選擇治療的動物醫院</span>
+                                </a>
+                                <a href="https://www.threads.com/@lostforeverkim/post/DW4EkEAkm3d?xmt=AQF04QZI03GD5iV02B5XyYf_p7UFjsiuWMEIoL9yiq3spA" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-amber-300 hover:-translate-y-0.5 transition-all duration-300">
+                                    <i data-lucide="pointer" class="text-amber-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-amber-600 transition-transform duration-300"></i>
+                                    <span class="text-stone-700 group-hover:text-amber-700 font-medium">第三篇：決定安寧的時機點</span>
+                                </a>
+                                
+                                <div class="mt-auto pt-4">
+                                    <div class="p-4 bg-amber-50 rounded-xl text-sm text-amber-900 border border-amber-200 shadow-sm flex items-start">
+                                        <i data-lucide="message-square-heart" class="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 text-amber-500"></i>
+                                        <p class="leading-relaxed">文章同步刊登在<a href="https://www.facebook.com/groups/741830676024950" target="_blank" rel="noopener noreferrer" class="font-bold text-amber-700 hover:text-amber-600 underline transition-colors">FB【腫瘤貓~ 照護醫療社團】</a>，社團需經審核才能加入，所以無法直接提供連結，建議加入社團，文章下有更多有經驗的前輩的分享留言。</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 貓友經驗分享區塊 -->
-                    <div id="friends-experience" class="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24">
-                        <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
-                            <div class="bg-blue-100 p-1.5 rounded-lg mr-3 shadow-sm">
-                                <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                        <!-- 貓友經驗分享區塊 -->
+                        <div id="friends-experience" class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden scroll-mt-24 flex flex-col">
+                            <div class="px-5 py-4 bg-stone-50 border-b border-stone-200 flex items-center">
+                                <div class="bg-blue-100 p-1.5 rounded-lg mr-3 shadow-sm">
+                                    <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <h2 class="text-lg font-bold text-stone-800">貓友經驗分享</h2>
                             </div>
-                            <h2 class="text-lg font-bold text-stone-800">貓友經驗分享</h2>
+                            <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner flex-1 flex flex-col">
+                                <a href="https://www.threads.com/@houtaroukun/post/DYQd3-rEpzm?xmt=AQG0vgUfb0HLanH54YtXBbwvUd39RykUYY43Oo4bOTnjJg" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-blue-300 hover:-translate-y-0.5 transition-all duration-300">
+                                    <i data-lucide="pointer" class="text-blue-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-blue-600 transition-transform duration-300"></i>
+                                    <span class="text-stone-700 group-hover:text-blue-700 font-medium">回顧黑豆確診腸胃道淋巴癌病史到離世與醫藥費治療總額計算</span>
+                                </a>
+                                <a href="https://www.threads.com/@junho.201806/post/DXJxGQAk2m-?xmt=AQG0Q2QbJM7dzBLFiuI3kdPLJoks-jSX1Hzni13DdHD6lg" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-blue-300 hover:-translate-y-0.5 transition-all duration-300">
+                                    <i data-lucide="pointer" class="text-blue-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-blue-600 transition-transform duration-300"></i>
+                                    <span class="text-stone-700 group-hover:text-blue-700 font-medium">腸胃型淋巴癌病程簡易記錄</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="p-4 sm:p-5 space-y-3 bg-stone-50/50 shadow-inner">
-                            <a href="https://www.threads.com/@houtaroukun/post/DYQd3-rEpzm?xmt=AQG0vgUfb0HLanH54YtXBbwvUd39RykUYY43Oo4bOTnjJg" target="_blank" rel="noopener noreferrer" title="點擊閱讀此文章" class="group flex items-start p-3.5 rounded-xl border border-stone-200 bg-white shadow-sm hover:shadow hover:border-blue-300 hover:-translate-y-0.5 transition-all duration-300">
-                                <i data-lucide="pointer" class="text-blue-500 mt-0.5 mr-3 flex-shrink-0 w-4 h-4 rotate-90 group-hover:translate-x-1 group-hover:text-blue-600 transition-transform duration-300"></i>
-                                <span class="text-stone-700 group-hover:text-blue-700 font-medium">回顧黑豆確診腸胃道淋巴癌病史到離世與醫藥費治療總額計算</span>
-                            </a>
-                        </div>
-                    </div>
+
+                    </div> <!-- 結束雙欄佈局 -->
 
                     <!-- 社群連結區塊 (Instagram & Threads) -->
                     <div class="mt-6 flex justify-center space-x-4">
